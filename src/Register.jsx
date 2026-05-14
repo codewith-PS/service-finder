@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from "./api/axios";
 
 const inputFields = [
   {
@@ -123,6 +124,16 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
+  // const [services, setServices] = useState([]);
+  // useEffect(() => {
+  //   fetchServices();
+  // }, []);
+
+  // const fetchServices = async () => {
+  //   const res = await api.get("/services");
+  //   setServices(res.data.service);
+  // };
+
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = "Name is required";
@@ -130,6 +141,9 @@ export default function Register() {
     if (!form.contactno.match(/^[0-9+\s-]{7,15}$/)) e.contactno = "Enter a valid phone number";
     if (form.password.length < 8) e.password = "Password must be at least 8 characters";
     if (!form.agree) e.agree = "You must accept the terms";
+    // if (form.role !== "user" && form.service_id === "") {
+    //   e.service_id = "Please select the service";
+    // }
     return e;
   };
 
@@ -152,23 +166,33 @@ export default function Register() {
     const e = validate();
     setErrors(e);
     if (Object.keys(e).length > 0) return;
-    console.log(form.name, form.email, form.contactno, form.password);
+    // console.log(form.name, form.email, form.contactno, form.password);
 
     try {
       const res = await axios.post('http://127.0.0.1:8000/api/register', form);
-      console.log(res.data);
+      // console.log(res.data);
       // alert('Registered Successfully ✅');
       toast.success('Register Successfully ✅');
       const token = res.data.token;
+      const name = res.data.user?.name;
+      const role = res.data.user?.role;
       localStorage.setItem('token', token);
-      setTimeout(() => {
-        navigate('/service');
-      }, 1000);
-
+      localStorage.setItem('name', name);
+      localStorage.setItem('role', role);
+      if (res.data.user.role === "provider") {
+        setTimeout(() => {
+          navigate('/providerdashboard');
+        }, 1000);
+      } else {
+        setTimeout(() => {
+          navigate('/service');
+        }, 1000);
+      }
 
     } catch (err) {
       if (err?.response?.data) {
         const errors = err.response.data.errors;
+        console.error(errors);
         toast.error(errors);
 
         // show first error
@@ -202,7 +226,7 @@ export default function Register() {
       </div>
     );
   }
-
+  const [selected, setSelected] = useState([]);
   return (
     <>
       <div style={pageStyle}>
@@ -256,6 +280,82 @@ export default function Register() {
                 <option value="user">User</option>
                 <option value="provider">Provider</option>
               </select>
+
+              {/* {form.role === "provider" && (
+                <div style={{ marginTop: 16 }}>
+                  <label style={labelStyle}>Select Service</label>
+
+                  <select
+                    name="service_id"
+                    value={form.service_id}
+                    onChange={handleChange}
+                    style={{
+                      width: "100%",
+                      height: "40px",
+                      borderRadius: "10px",
+                      border: "1.5px solid #e2e8f0",
+                    }}
+                  >
+                    <option value="">Select Service</option>
+
+                    {services.map((service) => (
+                      <option key={service.id} value={service.id}>
+                        {service.svcname}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )} */}
+
+
+              {/* <div style={{ padding: "20px" }}>
+
+                <h2>Select Services</h2>
+
+                {services.map((service) => (
+                  <label
+                    key={service.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      marginBottom: "10px"
+                    }}
+                  >
+
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(service.id)}
+                      onChange={() => handleChange(service.id)}
+                    />
+
+                    <span>{service.svcname}</span>
+
+                  </label>
+                ))}
+
+                <hr />
+
+                <h3>Selected Services IDs:</h3>
+                <pre>{JSON.stringify(selected, null, 2)}</pre>
+
+              </div> */}
+
+              {/* {errors.service_id && (
+                <p className="w-full bg-red-300">{errors.service_id}</p>
+              )} */}
+              {/* {errors.service_id && (
+                <p
+                  style={{
+                    color: "#ef4444",
+                    fontSize: 12,
+                    marginTop: 5,
+                    fontWeight: 500,
+                  }}
+                >
+                  {errors.service_id}
+                </p>
+              )} */}
               {/* <div className="role-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 8 }}>
               {roles.map((r) => {
                 const active = role === r.id;

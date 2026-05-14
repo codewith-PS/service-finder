@@ -31,20 +31,20 @@ export default function Services() {
     const [activeFilter, setActiveFilter] = useState("All");
     const [search, setSearch] = useState("");
     const [services, setServices] = useState([]);
-    const filtered = SERVICES.filter((s) => {
-        const matchCat = activeFilter === "All" || s.category === activeFilter;
-        const matchQ = !search ||
-            s.title.toLowerCase().includes(search.toLowerCase()) ||
-            s.desc.toLowerCase().includes(search.toLowerCase());
-        return matchCat && matchQ;
-    });
+    // const filtered = SERVICES.filter((s) => {
+    //     const matchCat = activeFilter === "All" || s.category === activeFilter;
+    //     const matchQ = !search ||
+    //         s.title.toLowerCase().includes(search.toLowerCase()) ||
+    //         s.desc.toLowerCase().includes(search.toLowerCase());
+    //     return matchCat && matchQ;
+    // }); 
 
     useEffect(() => {
         // console.log(localStorage.getItem('token'));
         api.get('http://127.0.0.1:8000/api/services')
             .then((res) => {
                 setServices(res.data.service);
-                console.log(res.data.service);
+                // console.log(res.data.service);
             })
             .catch((err) => {
                 console.log(err.response?.data || "Error");
@@ -209,7 +209,7 @@ export default function Services() {
                                 </h3>
 
                                 {/* Book Button */}
-                                <button className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.97] text-white text-sm font-medium py-2.5 rounded-xl transition-all duration-200">
+                                <button className="w-full bg-blue-600 cursor-pointer hover:bg-blue-700 active:scale-[0.97] text-white text-sm font-medium py-2.5 rounded-xl transition-all duration-200">
                                     Book Now →
                                 </button>
                             </div>

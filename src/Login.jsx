@@ -44,11 +44,13 @@ export default function Login() {
         // console.log(res.data);
         const token = res.data.token;
         const role = res.data.user?.role;
+        const name = res.data.user?.name;
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
+        localStorage.setItem('name', name);
         toast.success('login successfull!!');
         setTimeout(() => {
-          navigate(role === 'admin' ? '/admin/dashboard' : role === 'user' ? '/service' : '/');
+          navigate(role === 'admin' ? '/admin/dashboard' : role === 'user' ? '/service' : role === 'provider' ? '/providerdashboard' : '/');
         }, 1000);
 
       })

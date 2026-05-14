@@ -90,24 +90,24 @@ const AdminDashboard = () => {
     setServiceName('');
     setIsModalOpen(true);
   };
-  
-  const handleEditService = async(id) => {
+
+  const handleEditService = async (id) => {
     setIsModalOpen(true);
     // setEditingService(service);
     // setServiceName(service.name);
-    try{
-    const res = await api.put(`/service/${id}`,{
-      'name':serviceName
-    })
-    console.log(res.data);
-    } catch(err){
+    try {
+      const res = await api.put(`/service/${id}`, {
+        'name': serviceName
+      })
+      console.log(res.data);
+    } catch (err) {
       console.log(err.response?.data || "Error");
     }
   };
 
-  const handleDeleteService = async (id) => {
+  const handleDeleteService = async (id, svcname) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this service?"
+      `Are you sure you want to delete ${svcname} service?`
     );
     if (!confirmDelete) return;
     try {
@@ -186,23 +186,35 @@ const AdminDashboard = () => {
 
   // Logout Handler
   const handleLogout = async () => {
-    localStorage.removeItem('token');
+    try {
+      const res = await api.post('http://127.0.0.1:8000/api/adminlogout')
+        .then((res) => {
+          // console.log(res.data);
+          toast.warning(res.data.message);
+          localStorage.removeItem('token')
+          setTimeout(() => {
+            navigate('/login');
+          }, 1000);
+          setDropdownOpen(false);
+        })
+        .catch((err) => {
+          // console.error('err', err);
+        })
+    } catch(error){
+      // console.log('err', error);
+    }
 
-    setTimeout(() => {
-      navigate('/login');
-    }, 1000);
-
-
-    // const res = await axios.get('http://127.0.0.1:8000/api/admin/dashboard')
-    // .then((res)=>{
-    //     console.log(res.data);
-    // })
-    // .catch((err)=>{
-    //     console.log('err', err);
-    // })
-    // alert('Logged out successfully!');
-    setDropdownOpen(false);
   };
+
+
+  // const res = await axios.get('http://127.0.0.1:8000/api/admin/dashboard')
+  // .then((res)=>{
+  //     console.log(res.data);
+  // })
+  // .catch((err)=>{
+  //     console.log('err', err);
+  // })
+  // alert('Logged out successfully!');
 
   // Get status color
   const getStatusColor = (status) => {
@@ -350,7 +362,7 @@ const AdminDashboard = () => {
                 <button className="icon-btn edit" onClick={() => handleEditService(service.id)}>
                   <i className="fas fa-edit"></i>
                 </button>
-                <button className="icon-btn delete" onClick={() => handleDeleteService(service.id)}>
+                <button className="icon-btn delete" onClick={() => handleDeleteService(service.id, service.svcname)}>
                   <i className="fas fa-trash-alt"></i>
                 </button>
               </div>
