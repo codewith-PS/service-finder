@@ -10,6 +10,7 @@ import ProviderRoute from './routes/ProviderRoute';
 import Service from './Service';
 import ServiceRoute from './routes/ServiceRoute';
 import ProviderDashboard from './ProviderDashboard';
+import ServiceTest from './servicetest';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
+          <Route path='/servicetest' element={<ServiceTest/>}/>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />

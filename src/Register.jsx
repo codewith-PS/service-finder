@@ -176,9 +176,12 @@ export default function Register() {
       const token = res.data.token;
       const name = res.data.user?.name;
       const role = res.data.user?.role;
+      const id = res.data.user?.id;
       localStorage.setItem('token', token);
       localStorage.setItem('name', name);
       localStorage.setItem('role', role);
+      localStorage.setItem('id', id);
+
       if (res.data.user.role === "provider") {
         setTimeout(() => {
           navigate('/providerdashboard');
@@ -192,7 +195,7 @@ export default function Register() {
     } catch (err) {
       if (err?.response?.data) {
         const errors = err.response.data.errors;
-        console.error(errors);
+        // console.error(errors);
         toast.error(errors);
 
         // show first error
@@ -202,7 +205,7 @@ export default function Register() {
         // debug
         // console.log(errors);
       } else {
-        console.log("server error ❌");
+        // console.log("server error ❌");
       }
     }
   };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import api from "./api/axios";
 
 /* ─── Background decorative blobs ─── */
@@ -79,6 +79,27 @@ const BASE_CSS = `
   }
 `;
 
+/* ─── localStorage helpers ─────────────────────────────────────
+   Sirf applied service IDs save karte hain (per user).
+   Key: "appliedServiceIds_<userId>" → JSON array of ids
+────────────────────────────────────────────────────────────── */
+const getStorageKey = () => {
+    const uid = localStorage.getItem("id") || "guest";
+    return `appliedServiceIds_${uid}`;
+};
+
+const loadAppliedIds = () => {
+    try {
+        return JSON.parse(localStorage.getItem(getStorageKey())) || [];
+    } catch {
+        return [];
+    }
+};
+
+const saveAppliedIds = (ids) => {
+    localStorage.setItem(getStorageKey(), JSON.stringify(ids));
+};
+
 /* ─── Stat Card ─── */
 function StatCard({ icon, label, value, sub, subColor, delay }) {
     return (
@@ -93,51 +114,9 @@ function StatCard({ icon, label, value, sub, subColor, delay }) {
     );
 }
 
-/* ─── Main Dashboard ─── */
-export default function ProviderDashboard() {
-    const [services, setServices] = useState([]);
-    const [applied, setApplied] = useState([]); // stores applied service objects
-    const [activeNav, setActiveNav] = useState("services");
-    const [search, setSearch] = useState("");
-
-    useEffect(() => {
-        const fetchServices = async () => {
-            const res = await api.get('/services');
-            setServices(res.data.service);
-        };
-        fetchServices();
-    }, []);
-
-    // Apply karo — service object save karo
-    const applyService = async (service) => {
-        const alreadyApplied = applied.find((s) => s.id === service.id);
-        if (alreadyApplied) return;
-
-        // TODO: API call yahan lagao
-        // await api.post(`/apply-service/${service.id}`);
-
-        setApplied((prev) => [...prev, service]);
-    };
-
-    const totalEarnings = applied.reduce((acc, s) => acc + (s.price || 0), 0);
-
-    // Search filter — sirf services tab pe kaam karega
-    const filteredServices = services.filter((s) => {
-        const q = search.toLowerCase();
-        return !q || s.svcname.toLowerCase().includes(q);
-    });
-
-    const navItems = [
-        { id: "services", label: "Dashboard", icon: "🏠" },
-        { id: "services", label: "All Services", icon: "📋", badge: services.length },
-        { id: "applied", label: "My Applications", icon: "✅", badge: applied.length || null },
-        { id: "earnings", label: "Earnings", icon: "💰" },
-        { id: "profile", label: "Profile", icon: "👤" },
-        { id: "settings", label: "Settings", icon: "⚙️" },
-    ];
-
-    /* ── Reusable Service Card UI ── */
-    const ServiceCardUI = ({ service, isApplied, onApply }) => (
+/* ─── Service Card ─── */
+function ServiceCardUI({ service, isApplied, onApply }) {
+    return (
         <div
             style={{
                 background: "linear-gradient(145deg, #ffffff, #f8fafc)",
@@ -145,10 +124,10 @@ export default function ProviderDashboard() {
                 padding: 22,
                 border: isApplied ? "1.5px solid #86efac" : "1px solid rgba(226,232,240,.9)",
                 boxShadow: "0 10px 30px rgba(15,23,42,0.08)",
-                transition: "0.3s ease",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
                 position: "relative",
                 overflow: "hidden",
-                cursor: "pointer",
+                cursor: "default",
             }}
             onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-6px)";
@@ -208,23 +187,7 @@ export default function ProviderDashboard() {
                     <span style={{ fontSize: 15, fontWeight: 700, color: "#0f172a" }}>#{service.id}</span>
                 </div>
 
-                {/* Apply button — sirf applied nahi hai tab dikhao */}
-                {!isApplied ? (
-                    <button
-                        onClick={() => onApply(service)}
-                        style={{
-                            border: "none", outline: "none",
-                            background: "linear-gradient(135deg,#3b82f6,#2563eb)",
-                            color: "#fff", padding: "12px 18px", borderRadius: 12,
-                            fontSize: 14, fontWeight: 600, cursor: "pointer",
-                            boxShadow: "0 8px 18px rgba(37,99,235,.28)", transition: ".3s",
-                        }}
-                        onMouseEnter={(e) => e.target.style.transform = "scale(1.05)"}
-                        onMouseLeave={(e) => e.target.style.transform = "scale(1)"}
-                    >
-                        Apply
-                    </button>
-                ) : (
+                {isApplied ? (
                     <span style={{
                         fontSize: 13, fontWeight: 600, color: "#16a34a",
                         background: "#f0fdf4", padding: "8px 14px",
@@ -232,14 +195,295 @@ export default function ProviderDashboard() {
                     }}>
                         ✓ Applied
                     </span>
+                ) : (
+                    <button
+                        onClick={() => onApply(service)}
+                        style={{
+                            border: "none", outline: "none",
+                            background: "linear-gradient(135deg,#3b82f6,#2563eb)",
+                            color: "#fff", padding: "12px 18px", borderRadius: 12,
+                            fontSize: 14, fontWeight: 600, cursor: "pointer",
+                            boxShadow: "0 8px 18px rgba(37,99,235,.28)", transition: "transform .3s",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    >
+                        Apply
+                    </button>
                 )}
             </div>
         </div>
     );
+}
+
+/* ─── Main Dashboard ─── */
+export default function ProviderDashboard() {
+    const [services, setServices] = useState([]);
+
+    // ✅ applied: service objects — initially empty, phir services + localStorage se sync hoga
+    const [applied, setApplied] = useState([]);
+    // appliedIds: sirf IDs ka set — localStorage se seedha load
+    const [appliedIds, setAppliedIds] = useState(() => new Set(loadAppliedIds()));
+
+    const [activeNav, setActiveNav] = useState("services");
+    const [search, setSearch] = useState("");
+
+    // Apply modal state
+    const [applyModal, setApplyModal] = useState({ open: false, service: null });
+    const [applyLocation, setApplyLocation] = useState("");
+    const [applyExperience, setApplyExperience] = useState("");
+    const [applyLoading, setApplyLoading] = useState(false);
+
+    // ─── Fetch Services ───────────────────────────────────────
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const res = await api.get("/services");
+                const allServices = res.data.service;
+                setServices(allServices);
+
+                // Services aane ke baad, localStorage ke IDs se applied objects rebuild karo
+                const savedIds = loadAppliedIds();
+                if (savedIds.length > 0) {
+                    const restoredApplied = allServices.filter((s) =>
+                        savedIds.includes(s.id)
+                    );
+                    setApplied(restoredApplied);
+                }
+            } catch (err) {
+                console.error("Services fetch failed:", err);
+            }
+        };
+        fetchServices();
+    }, []);
+
+    // ─── Open / Close Modal ───────────────────────────────────
+    const openApplyModal = (service) => {
+        setApplyLocation("");
+        setApplyExperience("");
+        setApplyModal({ open: true, service });
+    };
+
+    const closeApplyModal = () => {
+        setApplyModal({ open: false, service: null });
+    };
+
+    // ─── Submit Application ───────────────────────────────────
+    const handleSubmitApplication = async () => {
+        const { service } = applyModal;
+
+        if (!applyLocation.trim() || !applyExperience) {
+            alert("Please fill all fields!");
+            return;
+        }
+
+        setApplyLoading(true);
+        try {
+            const payload = {
+                user_id: localStorage.getItem("id"),
+                service_id: service.id,
+                location: applyLocation,
+                experience: applyExperience,
+            };
+
+            const res = await api.post("/providerservice", payload);
+
+            // ✅ API success → state + localStorage dono update karo
+            setApplied((prev) => {
+                if (prev.find((s) => s.id === service.id)) return prev;
+                return [...prev, service];
+            });
+
+            setAppliedIds((prev) => {
+                const updated = new Set(prev);
+                updated.add(service.id);
+                saveAppliedIds([...updated]); // localStorage mein persist karo
+                return updated;
+            });
+
+            closeApplyModal();
+        } catch (err) {
+            alert(err.response?.data?.message|| "Application failed");
+            // alert("Application failed. Please try again.");
+        } finally {
+            setApplyLoading(false);
+        }
+    };
+
+    // console.log("appied", appliedIds);
+    // ─── Derived ──────────────────────────────────────────────
+    const totalEarnings = applied.reduce((acc, s) => acc + (s.price || 0), 0);
+
+    const filteredServices = services.filter((s) => {
+        const q = search.toLowerCase();
+        return !q || s.svcname.toLowerCase().includes(q);
+    });
+
+    const navItems = [
+        { id: "services", label: "Dashboard", icon: "🏠" },
+        { id: "services", label: "All Services", icon: "📋", badge: services.length },
+        { id: "applied", label: "My Applications", icon: "✅", badge: applied.length || null },
+        { id: "earnings", label: "Earnings", icon: "💰" },
+        { id: "profile", label: "Profile", icon: "👤" },
+        { id: "settings", label: "Settings", icon: "⚙️" },
+    ];
+
+ const [open, setOpen] = useState(false);
+    const boxRef = useRef(null);
+
+    useEffect(() => {
+        const handleOutside = (e) => {
+            if (boxRef.current && !boxRef.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleOutside);
+        };
+    }, []);
 
     return (
         <>
             <style>{BASE_CSS}</style>
+
+            {/* ─── Apply Modal ─── */}
+            {applyModal.open && (
+                <div
+                    onClick={(e) => e.target === e.currentTarget && closeApplyModal()}
+                    style={{
+                        position: "fixed", inset: 0,
+                        background: "rgba(10,20,50,.55)",
+                        backdropFilter: "blur(6px)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        zIndex: 200,
+                    }}
+                >
+                    <div style={{
+                        background: "#fff", borderRadius: 24,
+                        padding: "32px 30px 28px",
+                        width: "100%", maxWidth: 440,
+                        boxShadow: "0 30px 80px rgba(10,20,50,.2)",
+                        position: "relative",
+                        animation: "fadeUp .35s cubic-bezier(.22,1,.36,1)",
+                    }}>
+                        {/* Close */}
+                        <button
+                            onClick={closeApplyModal}
+                            style={{
+                                position: "absolute", top: 18, right: 18,
+                                width: 32, height: 32, borderRadius: 10,
+                                border: "1.5px solid #e2e8f0", background: "#f8fafc",
+                                cursor: "pointer", fontSize: 16, display: "flex",
+                                alignItems: "center", justifyContent: "center", color: "#64748b",
+                            }}
+                        >✕</button>
+
+                        {/* Header */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+                            <div style={{
+                                width: 48, height: 48, borderRadius: 14,
+                                background: "linear-gradient(135deg,#3b82f6,#2563eb)",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                fontSize: 22, boxShadow: "0 8px 20px rgba(37,99,235,.35)",
+                            }}>⚡</div>
+                            <div>
+                                <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", letterSpacing: "-.02em" }}>
+                                    Apply for Service
+                                </div>
+                                <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>
+                                    {applyModal.service?.svcname}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Auto-filled row */}
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                            {[
+                                { label: "User ID", value: localStorage.getItem("id") || "N/A" },
+                                { label: "Service ID", value: `#${applyModal.service?.id}` },
+                            ].map(({ label, value }) => (
+                                <div key={label}>
+                                    <div style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6 }}>
+                                        {label}{" "}
+                                        <span style={{ background: "#dbeafe", color: "#2563eb", fontSize: 10, padding: "1px 7px", borderRadius: 20, fontWeight: 700 }}>Auto</span>
+                                    </div>
+                                    <input
+                                        readOnly
+                                        value={value}
+                                        style={{
+                                            width: "100%", padding: "11px 13px",
+                                            border: "1.5px solid #e2e8f0", borderRadius: 12,
+                                            fontSize: 14, color: "#64748b", background: "#f1f5f9",
+                                            fontFamily: "inherit", cursor: "not-allowed",
+                                        }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Location */}
+                        <div style={{ marginBottom: 16 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6 }}>Location</div>
+                            <input
+                                type="text"
+                                placeholder="e.g. Mumbai, Maharashtra"
+                                value={applyLocation}
+                                onChange={(e) => setApplyLocation(e.target.value)}
+                                style={{
+                                    width: "100%", padding: "11px 13px",
+                                    border: "1.5px solid #e2e8f0", borderRadius: 12,
+                                    fontSize: 14, color: "#0f172a", background: "#f8fafc",
+                                    fontFamily: "inherit", outline: "none",
+                                }}
+                                onFocus={(e) => { e.target.style.borderColor = "#3b82f6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,.12)"; }}
+                                onBlur={(e) => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+                            />
+                        </div>
+
+                        {/* Experience */}
+                        <div style={{ marginBottom: 22 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6 }}>Experience</div>
+                            <select
+                                value={applyExperience}
+                                onChange={(e) => setApplyExperience(e.target.value)}
+                                style={{
+                                    width: "100%", padding: "11px 13px",
+                                    border: "1.5px solid #e2e8f0", borderRadius: 12,
+                                    fontSize: 14, color: "#0f172a", background: "#f8fafc",
+                                    fontFamily: "inherit", outline: "none", cursor: "pointer",
+                                }}
+                            >
+                                <option value="">Select experience level</option>
+                                <option value="fresher">Fresher (0–1 yr)</option>
+                                <option value="junior">Junior (1–3 yrs)</option>
+                                <option value="mid">Mid-level (3–5 yrs)</option>
+                                <option value="senior">Senior (5+ yrs)</option>
+                            </select>
+                        </div>
+
+                        {/* Submit */}
+                        <button
+                            onClick={handleSubmitApplication}
+                            disabled={applyLoading}
+                            style={{
+                                width: "100%", padding: 14,
+                                background: applyLoading ? "#93c5fd" : "linear-gradient(135deg,#3b82f6,#2563eb)",
+                                color: "#fff", border: "none", borderRadius: 14,
+                                fontSize: 15, fontWeight: 700,
+                                cursor: applyLoading ? "not-allowed" : "pointer",
+                                boxShadow: "0 8px 24px rgba(37,99,235,.3)",
+                                fontFamily: "inherit", letterSpacing: "-.01em",
+                                transition: "background .2s",
+                            }}
+                        >
+                            {applyLoading ? "Submitting…" : "Submit Application →"}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div style={{
                 minHeight: "100vh",
@@ -258,7 +502,6 @@ export default function ProviderDashboard() {
                         display: "flex", flexDirection: "column", flexShrink: 0,
                         boxShadow: "4px 0 24px rgba(0,0,0,.12)",
                     }}>
-                        {/* Logo */}
                         <div style={{ padding: "24px 16px 16px", borderBottom: "1px solid rgba(255,255,255,.08)" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                                 <div style={{
@@ -274,7 +517,6 @@ export default function ProviderDashboard() {
                             </div>
                         </div>
 
-                        {/* Nav */}
                         <nav style={{ flex: 1, padding: "14px 10px" }}>
                             {navItems.map((item, i) => (
                                 <button
@@ -282,7 +524,8 @@ export default function ProviderDashboard() {
                                     className={`nav-link ${activeNav === item.id && item.label !== "All Services"
                                         ? "active"
                                         : activeNav === "services" && item.label === "All Services"
-                                            ? "active" : ""}`}
+                                            ? "active" : ""
+                                        }`}
                                     onClick={() => setActiveNav(item.id)}
                                     style={{ marginBottom: 2 }}
                                 >
@@ -298,7 +541,6 @@ export default function ProviderDashboard() {
                             ))}
                         </nav>
 
-                        {/* Provider info */}
                         <div style={{ padding: "14px 10px", borderTop: "1px solid rgba(255,255,255,.08)" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px" }}>
                                 <div style={{
@@ -306,9 +548,13 @@ export default function ProviderDashboard() {
                                     background: "linear-gradient(135deg, #2563eb, #06b6d4)",
                                     display: "flex", alignItems: "center", justifyContent: "center",
                                     color: "#fff", fontWeight: 800, fontSize: 13, flexShrink: 0,
-                                }}>{localStorage.getItem('name')?.[0].toUpperCase()}</div>
+                                }}>
+                                    {localStorage.getItem("name")?.[0]?.toUpperCase() || ""}
+                                </div>
                                 <div>
-                                    <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{localStorage.getItem('name')}</div>
+                                    <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>
+                                        {localStorage.getItem("name") || "Provider"}
+                                    </div>
                                     <div style={{ color: "rgba(255,255,255,.45)", fontSize: 11 }}>✔ Verified Provider</div>
                                 </div>
                             </div>
@@ -318,7 +564,6 @@ export default function ProviderDashboard() {
                     {/* ── MAIN ── */}
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
 
-                        {/* Topbar */}
                         <header style={{
                             background: "rgba(255,255,255,.85)",
                             backdropFilter: "blur(12px)",
@@ -340,7 +585,6 @@ export default function ProviderDashboard() {
                             </div>
 
                             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                {/* Search */}
                                 <div style={{
                                     display: "flex", alignItems: "center", gap: 8,
                                     background: "#f8fafc", border: "1.5px solid #e2e8f0",
@@ -360,7 +604,6 @@ export default function ProviderDashboard() {
                                     />
                                 </div>
 
-                                {/* Notif */}
                                 <button style={{
                                     width: 40, height: 40, borderRadius: 12,
                                     border: "1.5px solid #e2e8f0", background: "#fff",
@@ -376,26 +619,93 @@ export default function ProviderDashboard() {
                                     }} />
                                 </button>
 
-                                {/* Avatar */}
-                                <div style={{
+                                {/* <div style={{
                                     width: 40, height: 40, borderRadius: "50%",
                                     background: "linear-gradient(135deg, #2563eb, #06b6d4)",
                                     display: "flex", alignItems: "center", justifyContent: "center",
                                     color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer",
                                     boxShadow: "0 2px 8px rgba(37,99,235,.35)",
-                                }}>{localStorage.getItem('name')?.[0].toUpperCase()}</div>
+                                }}>
+                                    {localStorage.getItem("name")?.[0]?.toUpperCase() || ""}
+                                </div> */}
+                                  <div
+            ref={boxRef}
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+            style={{
+                position: "relative",
+                display: "inline-flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+            }}
+        >
+            {/* Avatar */}
+            <div
+                onClick={() => setOpen(!open)}
+                style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg, #2563eb, #06b6d4)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#fff",
+                    fontWeight: 800,
+                    fontSize: 14,
+                    cursor: "pointer",
+                    userSelect: "none",
+                    boxShadow: "0 2px 8px rgba(37,99,235,.35)",
+                }}
+            >
+                {localStorage.getItem("name")?.[0]?.toUpperCase() || ""}
+            </div>
+
+            {/* Dropdown */}
+            {open && (
+                <div
+                    style={{
+                        marginTop: 8,
+                        background: "#fff",
+                        borderRadius: 10,
+                        padding: 8,
+                        minWidth: 120,
+                        boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                        border: "1px solid #eee",
+                        zIndex: 100,
+                    }}
+                >
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('role');
+                            window.location.reload();
+                        }}
+                        style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            border: "none",
+                            borderRadius: 8,
+                            background: "#ef4444",
+                            color: "#fff",
+                            cursor: "pointer",
+                            fontWeight: 600,
+                        }}
+                    >
+                        Logout
+                    </button>
+                </div>
+            )}
+        </div>
+
                             </div>
                         </header>
 
-                        {/* ── CONTENT ── */}
                         <main style={{ flex: 1, padding: "28px 28px", overflowY: "auto" }}>
 
-                            {/* ══════════════════════════════
-                                ALL SERVICES TAB
-                            ══════════════════════════════ */}
+                            {/* ══ ALL SERVICES TAB ══ */}
                             {activeNav !== "applied" && (
                                 <>
-                                    {/* Stats */}
                                     <div className="stats-grid" style={{
                                         display: "grid",
                                         gridTemplateColumns: "repeat(4, 1fr)",
@@ -407,13 +717,11 @@ export default function ProviderDashboard() {
                                         <StatCard icon="⭐" label="Profile Score" value="87%" sub="↑ 5% this month" subColor="#16a34a" delay=".15s" />
                                     </div>
 
-                                    {/* Heading */}
                                     <div style={{ marginBottom: 20 }}>
                                         <div style={{ height: 5, width: "100%", background: "#3b82f6", borderRadius: 10, marginBottom: 12 }} />
                                         <h2 style={{ fontSize: 20, fontWeight: 700, color: "#0f172a" }}>Apply the Services</h2>
                                     </div>
 
-                                    {/* Services Grid */}
                                     {filteredServices.length === 0 ? (
                                         <div style={{
                                             textAlign: "center", padding: "60px 20px",
@@ -434,8 +742,8 @@ export default function ProviderDashboard() {
                                                 <ServiceCardUI
                                                     key={service.id}
                                                     service={service}
-                                                    isApplied={!!applied.find((s) => s.id === service.id)}
-                                                    onApply={applyService}
+                                                    isApplied={appliedIds.has(service.id)}
+                                                    onApply={openApplyModal}
                                                 />
                                             ))}
                                         </div>
@@ -443,12 +751,9 @@ export default function ProviderDashboard() {
                                 </>
                             )}
 
-                            {/* ══════════════════════════════
-                                MY APPLICATIONS TAB
-                            ══════════════════════════════ */}
+                            {/* ══ MY APPLICATIONS TAB ══ */}
                             {activeNav === "applied" && (
                                 <>
-                                    {/* Heading */}
                                     <div style={{ marginBottom: 20 }}>
                                         <div style={{ height: 5, width: "100%", background: "#22c55e", borderRadius: 10, marginBottom: 12 }} />
                                         <h2 style={{ fontSize: 20, fontWeight: 700, color: "#0f172a" }}>
@@ -456,7 +761,6 @@ export default function ProviderDashboard() {
                                         </h2>
                                     </div>
 
-                                    {/* Empty State */}
                                     {applied.length === 0 ? (
                                         <div style={{
                                             textAlign: "center", padding: "60px 20px",
@@ -465,10 +769,10 @@ export default function ProviderDashboard() {
                                         }}>
                                             <div style={{ fontSize: 48, marginBottom: 12 }}>📋</div>
                                             <div style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", marginBottom: 6 }}>
-                                                Not Any Applied Services
+                                                No Applied Services Yet
                                             </div>
                                             <div style={{ fontSize: 14, color: "#64748b" }}>
-                                                Apply the Services on All Services
+                                                Go to All Services and apply to get started.
                                             </div>
                                         </div>
                                     ) : (
@@ -482,14 +786,13 @@ export default function ProviderDashboard() {
                                                     key={service.id}
                                                     service={service}
                                                     isApplied={true}
-                                                    onApply={() => {}}
+                                                    onApply={() => { }}
                                                 />
                                             ))}
                                         </div>
                                     )}
                                 </>
                             )}
-
                         </main>
                     </div>
                 </div>

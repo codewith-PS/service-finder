@@ -45,9 +45,11 @@ export default function Login() {
         const token = res.data.token;
         const role = res.data.user?.role;
         const name = res.data.user?.name;
+        const id = res.data.user?.id;
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('name', name);
+        localStorage.setItem('id', id);
         toast.success('login successfull!!');
         setTimeout(() => {
           navigate(role === 'admin' ? '/admin/dashboard' : role === 'user' ? '/service' : role === 'provider' ? '/providerdashboard' : '/');
