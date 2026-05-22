@@ -77,7 +77,7 @@ export default function Login() {
         <div style={{ ...cardStyle, textAlign: "center", padding: "64px 40px", maxWidth: 400, width: "100%" }}>
           <div className="success-pop" style={{ width: 76, height: 76, borderRadius: "50%", background: "linear-gradient(135deg,#d1fae5,#a7f3d0)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", fontSize: 34 }}>✅</div>
           <h2 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", marginBottom: 10, letterSpacing: "-0.5px" }}>Welcome back!</h2>
-          <p style={{ color: "#64748b", fontSize: 14.5, lineHeight: 1.7 }}>You're successfully logged in to your FixIt account.</p>
+          <p style={{ color: "#64748b", fontSize: 14.5, lineHeight: 1.7 }}>You're successfully logged in to your account.</p>
           <button onClick={() => { setSuccess(false); setIdentifier(""); setPassword(""); }} style={{ ...primaryBtn, marginTop: 28 }}>
             Back to Login
           </button>
@@ -96,7 +96,7 @@ export default function Login() {
           {/* Logo */}
           <a href="#" style={{ display: "inline-flex", alignItems: "center", gap: 9, marginBottom: 28, textDecoration: "none" }}>
             <div style={{ width: 38, height: 38, background: "#2563eb", borderRadius: 11, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, boxShadow: "0 4px 12px rgba(37,99,235,.35)" }}>🔩</div>
-            <span style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", letterSpacing: "-0.8px" }}>Fix<span style={{ color: "#2563eb" }}>It</span></span>
+            <span style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", letterSpacing: "-0.8px" }}>Service<span style={{ color: "#2563eb" }}>Finder</span></span>
           </a>
 
           <div className="card-in" style={cardStyle}>

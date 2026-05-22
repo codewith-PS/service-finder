@@ -11,7 +11,7 @@ const AdminDashboard = () => {
     api.get('/service')
       .then((res) => {
         setServices(res.data.service);
-        console.log(res.data.service);
+        // console.log(res.data.service);
       })
       .catch((err) => {
         console.log(err.response?.data || "Error");
@@ -200,7 +200,7 @@ const AdminDashboard = () => {
         .catch((err) => {
           // console.error('err', err);
         })
-    } catch(error){
+    } catch (error) {
       // console.log('err', error);
     }
 
@@ -504,7 +504,7 @@ const AdminDashboard = () => {
           <div className="sidebar-header">
             <h2>
               <i className="fas fa-tools"></i>
-              <span>Local<span className="highlight">Finder</span></span>
+              <span>Service<span className="highlight">Finder</span></span>
             </h2>
             <p>Admin Console v2.0</p>
           </div>
@@ -517,10 +517,10 @@ const AdminDashboard = () => {
               <i className="fas fa-concierge-bell"></i>
               <span>Manage Services</span>
             </div>
-            <div className={`nav-item ${activeTab === 'providers' ? 'active' : ''}`} onClick={() => setActiveTab('providers')}>
+            {/* <div className={`nav-item ${activeTab === 'providers' ? 'active' : ''}`} onClick={() => setActiveTab('providers')}>
               <i className="fas fa-hard-hat"></i>
               <span>Service Providers</span>
-            </div>
+            </div> */}
             <div className={`nav-item ${activeTab === 'bookings' ? 'active' : ''}`} onClick={() => setActiveTab('bookings')}>
               <i className="fas fa-calendar-check"></i>
               <span>Bookings</span>
@@ -649,7 +649,7 @@ const AdminDashboard = () => {
         /* Sidebar Styles */
         .sidebar {
           width: 280px;
-          background: #1a1f3a;
+          background: #1E3A68;
           color: #a0aec0;
           display: flex;
           flex-direction: column;
@@ -673,7 +673,7 @@ const AdminDashboard = () => {
         }
 
         .sidebar-header h2 .highlight {
-          color: #2dd4bf;
+          color: white;
         }
 
         .sidebar-header h2 i {

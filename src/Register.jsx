@@ -265,7 +265,7 @@ export default function Register() {
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32 }}>
             <div style={{ width: 36, height: 36, background: "#2563eb", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🔩</div>
             <span style={{ fontSize: 22, fontWeight: 900, color: "#0f172a", letterSpacing: "-0.5px" }}>
-              Fix<span style={{ color: "#2563eb" }}>It</span>
+              Service<span style={{ color: "#2563eb" }}>Finder</span>
             </span>
           </div>
 

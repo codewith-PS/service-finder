@@ -511,7 +511,7 @@ export default function ProviderDashboard() {
                                     fontSize: 18, boxShadow: "0 4px 12px rgba(37,99,235,.4)",
                                 }}>🛠️</div>
                                 <div>
-                                    <div style={{ color: "#fff", fontWeight: 800, fontSize: 16, letterSpacing: "-.01em" }}>ServiceHub</div>
+                                    <div style={{ color: "#fff", fontWeight: 800, fontSize: 16, letterSpacing: "-.01em" }}>ServiceFinder</div>
                                     <div style={{ color: "rgba(255,255,255,.45)", fontSize: 11 }}>Provider Portal</div>
                                 </div>
                             </div>

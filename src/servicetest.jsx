@@ -157,7 +157,7 @@ export default function Dashboard() {
                 {/* Logo Row */}
                 <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "18px 14px", borderBottom: "1px solid #F1F5F9", minHeight: 64 }}>
                     <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#3B82F6,#34D399)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 17, fontWeight: 900, flexShrink: 0 }}>⚙</div>
-                    {!collapsed && <span style={{ fontWeight: 800, fontSize: 15, color: "#0F172A", whiteSpace: "nowrap", flex: 1 }}>ServiConnect</span>}
+                    {!collapsed && <span style={{ fontWeight: 800, fontSize: 15, color: "#0F172A", whiteSpace: "nowrap", flex: 1 }}>ServiceFinder</span>}
                     <button onClick={() => setCollapsed(c => !c)} style={{ background: "none", border: "none", cursor: "pointer", color: "#CBD5E1", fontSize: 11, padding: 4, marginLeft: "auto", flexShrink: 0 }}>
                         {collapsed ? "▶" : "◀"}
                     </button>
