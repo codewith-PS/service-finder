@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
@@ -58,16 +58,61 @@ export default function Login() {
       })
       .catch(err => {
         if (err?.response?.data) {
-          console.log(err.response.data);
+          // console.log(err.response.data);
           setErr(err.response.data.error);
           setErrors(err.response.data.error);
-          console.log(err.response.data.error || 'Login failed');
+          // console.log(err.response.data.error || 'Login failed');
         } else {
-          console.log('server error');
+          // console.log('server error');
         }
       });
   }
+  useEffect(() => {
+    if (!window.google) return;
 
+    google.accounts.id.initialize({
+      client_id: "346724748220-dm4ldmmbd2tgvcgprk0js99e5mht4bu8.apps.googleusercontent.com",
+      callback: handleGoogleResponse
+    });
+
+    google.accounts.id.renderButton(
+      document.getElementById("googleButton"),
+      { theme: "outline", size: "large" }
+    );
+  }, []);
+
+  const handleGoogleResponse = async (response) => {
+    // console.log("ye response hai", response);
+    try {
+      const res = await axios.post('http://localhost:8000/api/auth/google', {
+        token: response.credential
+      });
+
+      // console.log(res.data);
+
+      if (!res.data.user) {
+        toast.error(res.data.error || "Google login failed");
+        return;
+      }
+
+      const { token, user } = res.data;
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', user.role);
+      localStorage.setItem('name', user.name);
+      localStorage.setItem('id', user.id);
+
+      toast.success('Login successful');
+
+      setTimeout(() => {
+        navigate('/service');
+      }, 1000);
+
+    } catch (err) {
+      // console.log(err);
+      toast.error('Google login failed');
+    }
+  };
 
   if (success) {
     return (
@@ -85,6 +130,9 @@ export default function Login() {
       </div>
     );
   }
+
+
+
 
   return (
     <>
@@ -233,20 +281,23 @@ export default function Login() {
             </div>
 
             {/* Social */}
-            <div style={{ display: "flex", gap: 10 }}>
+            {/* <div style={{ display: "flex", gap: 10 }}>
               {[
                 { label: "Google", color: "#ea4335", icon: "G" },
-                { label: "Facebook", color: "#1877f2", icon: "f" },
+                // { label: "Facebook", color: "#1877f2", icon: "f" },
               ].map(({ label, color, icon }) => (
                 <button key={label}
+                  onClick={() => handleGoogleResponse()}
                   style={{ flex: 1, padding: "11px", border: "1.5px solid #e2e8f0", borderRadius: 10, background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, fontSize: 14, fontWeight: 600, color: "#374151", transition: "border .2s, box-shadow .2s", fontFamily: "inherit" }}
                   onMouseOver={(e) => { e.currentTarget.style.borderColor = color; e.currentTarget.style.boxShadow = `0 0 0 3px ${color}18`; }}
                   onMouseOut={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.boxShadow = "none"; }}>
+
                   <span style={{ color, fontWeight: 900, fontSize: 17, lineHeight: 1 }}>{icon}</span>
                   {label}
                 </button>
               ))}
-            </div>
+            </div> */}
+            <div id="googleButton"></div>
 
             {/* Register link */}
             <p style={{ textAlign: "center", marginTop: 24, fontSize: 14, color: "#64748b" }}>

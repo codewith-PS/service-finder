@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import api from './api/axios';
+import { TailSpin } from 'react-loader-spinner';
+
 
 const AdminDashboard = () => {
   useEffect(() => {
@@ -24,6 +26,9 @@ const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [serviceName, setServiceName] = useState('');
+  const [Usersdata, Allusersdata] = useState([]);
+  const [loading, setLoading] = useState(false);
+
 
   // Mock Data
   const [services, setServices] = useState([]);
@@ -36,13 +41,13 @@ const AdminDashboard = () => {
   //   { id: 5, name: 'CleanMaster', service: 'Cleaning', location: 'Southside', experience: '4 years', rating: 4.6, jobs: 98 },
   // ]);
 
-  const [bookings, setBookings] = useState([
-    { id: 101, user_name: 'Amit Sharma', user_avatar: 'AS', provider_name: 'Rajesh Plumbing', date: '2025-05-10', time: '10:00 AM', status: 'pending', amount: '₹499' },
-    { id: 102, user_name: 'Neha Verma', user_avatar: 'NV', provider_name: 'Bright Electric', date: '2025-05-12', time: '2:00 PM', status: 'completed', amount: '₹899' },
-    { id: 103, user_name: 'Rohan Singh', user_avatar: 'RS', provider_name: 'Woodcraft Pros', date: '2025-05-15', time: '11:30 AM', status: 'pending', amount: '₹1299' },
-    { id: 104, user_name: 'Priya Patel', user_avatar: 'PP', provider_name: 'Sharma Painting', date: '2025-05-18', time: '9:00 AM', status: 'pending', amount: '₹2499' },
-    { id: 105, user_name: 'Vikram Kumar', user_avatar: 'VK', provider_name: 'CleanMaster', date: '2025-05-20', time: '3:00 PM', status: 'completed', amount: '₹599' },
-  ]);
+  // const [bookings, setBookings] = useState([
+  //   { id: 101, user_name: 'Amit Sharma', user_avatar: 'AS', provider_name: 'Rajesh Plumbing', date: '2025-05-10', time: '10:00 AM', status: 'pending', amount: '₹499' },
+  //   { id: 102, user_name: 'Neha Verma', user_avatar: 'NV', provider_name: 'Bright Electric', date: '2025-05-12', time: '2:00 PM', status: 'completed', amount: '₹899' },
+  //   { id: 103, user_name: 'Rohan Singh', user_avatar: 'RS', provider_name: 'Woodcraft Pros', date: '2025-05-15', time: '11:30 AM', status: 'pending', amount: '₹1299' },
+  //   { id: 104, user_name: 'Priya Patel', user_avatar: 'PP', provider_name: 'Sharma Painting', date: '2025-05-18', time: '9:00 AM', status: 'pending', amount: '₹2499' },
+  //   { id: 105, user_name: 'Vikram Kumar', user_avatar: 'VK', provider_name: 'CleanMaster', date: '2025-05-20', time: '3:00 PM', status: 'completed', amount: '₹599' },
+  // ]);
 
   const [stats, setStats] = useState({
     totalServices: 0,
@@ -223,6 +228,36 @@ const AdminDashboard = () => {
       : { bg: '#d1fae5', color: '#059669', dot: '#10b981' };
   };
 
+
+  useEffect(() => {
+    if (activeTab !== 'user') return;
+    setLoading(true);
+    const res = api.get('/userdata', {
+      params: { role: activeTab }
+    })
+      .then((res) => {
+        // console.log(res.data.user);
+        Allusersdata(res.data.user);
+      })
+      .catch((err) => {
+        // console.log('err', err);
+      })
+      .finally(() => setLoading(false));
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab !== 'provider') return;
+    const res = api.get('/userdata', {
+      params: { role: activeTab }
+    })
+      .then((res) => {
+        // console.log(res.data.user);
+        Allusersdata(res.data.user);
+      })
+      .catch((err) => {
+        // console.log('err', err);
+      })
+  }, [activeTab]);
   // Dashboard Component
   const Dashboard = () => (
     <>
@@ -313,7 +348,7 @@ const AdminDashboard = () => {
             <h3><i className="fas fa-bell"></i> Recent Bookings</h3>
             <span className="badge">Latest 4</span>
           </div>
-          <div className="recent-bookings">
+          {/* <div className="recent-bookings">
             {bookings.slice(0, 4).map(booking => {
               const statusColor = getStatusColor(booking.status);
               return (
@@ -332,10 +367,147 @@ const AdminDashboard = () => {
                 </div>
               );
             })}
-          </div>
+          </div> */}
         </div>
       </div>
     </>
+  );
+
+  {/* Style objects — component ke bahar rakho */ }
+  const th = { padding: "12px 16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "#64748b" };
+  const td = { padding: "12px 16px", fontSize: 13, color: "#1e293b" };
+  const UsersList = () => (
+    <div className="section-container">
+      <div className="card-panel">
+        <div className="card-header">
+          <h3><i className="fas fa-users"></i> All Users</h3>
+          <div className="search-box">
+            <i className="fas fa-search"></i>
+            <input type="text" placeholder="Search users..." />
+          </div>
+        </div>
+        {/*  data table */}
+        {/* <table border="1" width="100%">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Contact</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Usersdata.map((item, i) => (
+              <tr key={item.id}>
+                <td>{i + 1}</td>
+                <td>{item.name}</td>
+                <td>{item.email}</td>
+                <td>{item.contactno}</td>
+                <td>{item.role}</td>
+              </tr>
+              ))}
+              </tbody>
+              </table> */}
+
+        <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid #e2e8f0", background: "white" }}>
+          {loading ? (
+            <div style={{ display:'flex', justifyContent:'center', alignItems: 'center', textAlign: 'center', marginTop: '20px', width: '100' }}>
+              <TailSpin
+                height="30"
+                width="30"
+              />
+            </div>
+          ) : (
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+
+              <thead>
+                <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+                  <th style={th}>#</th>
+                  <th style={th}>Name</th>
+                  <th style={th}>Email</th>
+                  <th style={th}>Contact</th>
+                  <th style={th}>Role</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {Usersdata.map((item, i) => (
+                  <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9" }}
+                    onMouseEnter={e => e.currentTarget.style.background = "#f8fafc"}
+                    onMouseLeave={e => e.currentTarget.style.background = "white"}
+                  >
+                    <td style={td}>{i + 1}</td>
+
+                    {/* Name + Avatar */}
+                    <td style={td}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{
+                          width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
+                          background: item.role === "user" ? "#E6F1FB" : "#FAEEDA",
+                          color: item.role === "user" ? "#0C447C" : "#633806",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 11, fontWeight: 500,
+                        }}>
+                          {item.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
+                        </div>
+                        {item.name}
+                      </div>
+                    </td>
+
+                    <td style={{ ...td, color: "#64748b" }}>{item.email}</td>
+                    <td style={td}>{item.contactno}</td>
+
+                    {/* Role Badge */}
+                    <td style={td}>
+                      <span style={{
+                        padding: "2px 10px", borderRadius: 20, fontSize: 11, fontWeight: 500,
+                        background: item.role === "user" ? "#E6F1FB" : "#FAEEDA",
+                        color: item.role === "user" ? "#185FA5" : "#854F0B",
+                      }}>
+                        {item.role}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+
+            </table>
+          )}
+        </div>
+
+
+
+      </div>
+    </div>
+  );
+  const Providers = () => (
+    <div className="section-container">
+      <div className="card-panel">
+        <div className="card-header">
+          <h3><i className="fas fa-users"></i> All Service Providers</h3>
+          <div className="search-box">
+            <i className="fas fa-search"></i>
+            <input type="text" placeholder="Search users..." />
+          </div>
+        </div>
+        {/* Yahan tu DataTable lagayega */}
+      </div>
+    </div>
+  );
+  const Bookings = () => (
+    <div className="section-container">
+      <div className="card-panel">
+        <div className="card-header">
+          <h3><i className="fas fa-users"></i> All Bookings</h3>
+          <div className="search-box">
+            <i className="fas fa-search"></i>
+            <input type="text" placeholder="Search users..." />
+          </div>
+        </div>
+        {/* Yahan tu DataTable lagayega */}
+      </div>
+    </div>
   );
 
   // Services Management Component
@@ -521,7 +693,20 @@ const AdminDashboard = () => {
               <i className="fas fa-hard-hat"></i>
               <span>Service Providers</span>
             </div> */}
-            <div className={`nav-item ${activeTab === 'bookings' ? 'active' : ''}`} onClick={() => setActiveTab('bookings')}>
+            <div className={`nav-item ${activeTab === 'user' ? 'active' : ''}`}
+              onClick={() => setActiveTab('user')}>
+              <i className="fas fa-users"></i>
+              <span>Users</span>
+            </div>
+
+            <div className={`nav-item ${activeTab === 'provider' ? 'active' : ''}`}
+              onClick={() => setActiveTab('provider')}>
+              <i className="fas fa-hard-hat"></i>
+              <span>Service Providers</span>
+            </div>
+
+            <div className={`nav-item ${activeTab === 'bookings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('bookings')}>
               <i className="fas fa-calendar-check"></i>
               <span>Bookings</span>
             </div>
@@ -585,8 +770,9 @@ const AdminDashboard = () => {
           <div className="content-wrapper">
             {activeTab === 'dashboard' && <Dashboard />}
             {activeTab === 'services' && <ServicesManagement />}
-            {activeTab === 'providers' && <ProvidersList />}
-            {activeTab === 'bookings' && <BookingsManagement />}
+            {activeTab === 'user' && <UsersList />}
+            {activeTab === 'providers' && <Providers />}
+            {activeTab === 'bookings' && <Bookings />}
           </div>
 
           <footer className="footer">

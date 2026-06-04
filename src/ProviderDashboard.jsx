@@ -286,6 +286,7 @@ export default function ProviderDashboard() {
                 experience: applyExperience,
             };
 
+            console.log(payload);
             const res = await api.post("/providerservice", payload);
 
             // ✅ API success → state + localStorage dono update karo
@@ -303,7 +304,7 @@ export default function ProviderDashboard() {
 
             closeApplyModal();
         } catch (err) {
-            alert(err.response?.data?.message|| "Application failed");
+            alert(err.response?.data?.message || "Application failed");
             // alert("Application failed. Please try again.");
         } finally {
             setApplyLoading(false);
@@ -328,7 +329,7 @@ export default function ProviderDashboard() {
         { id: "settings", label: "Settings", icon: "⚙️" },
     ];
 
- const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
     const boxRef = useRef(null);
 
     useEffect(() => {
@@ -628,75 +629,75 @@ export default function ProviderDashboard() {
                                 }}>
                                     {localStorage.getItem("name")?.[0]?.toUpperCase() || ""}
                                 </div> */}
-                                  <div
-            ref={boxRef}
-            onMouseEnter={() => setOpen(true)}
-            onMouseLeave={() => setOpen(false)}
-            style={{
-                position: "relative",
-                display: "inline-flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-            }}
-        >
-            {/* Avatar */}
-            <div
-                onClick={() => setOpen(!open)}
-                style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: "50%",
-                    background: "linear-gradient(135deg, #2563eb, #06b6d4)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#fff",
-                    fontWeight: 800,
-                    fontSize: 14,
-                    cursor: "pointer",
-                    userSelect: "none",
-                    boxShadow: "0 2px 8px rgba(37,99,235,.35)",
-                }}
-            >
-                {localStorage.getItem("name")?.[0]?.toUpperCase() || ""}
-            </div>
+                                <div
+                                    ref={boxRef}
+                                    onMouseEnter={() => setOpen(true)}
+                                    onMouseLeave={() => setOpen(false)}
+                                    style={{
+                                        position: "relative",
+                                        display: "inline-flex",
+                                        flexDirection: "column",
+                                        alignItems: "flex-end",
+                                    }}
+                                >
+                                    {/* Avatar */}
+                                    <div
+                                        onClick={() => setOpen(!open)}
+                                        style={{
+                                            width: 40,
+                                            height: 40,
+                                            borderRadius: "50%",
+                                            background: "linear-gradient(135deg, #2563eb, #06b6d4)",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            color: "#fff",
+                                            fontWeight: 800,
+                                            fontSize: 14,
+                                            cursor: "pointer",
+                                            userSelect: "none",
+                                            boxShadow: "0 2px 8px rgba(37,99,235,.35)",
+                                        }}
+                                    >
+                                        {localStorage.getItem("name")?.[0]?.toUpperCase() || ""}
+                                    </div>
 
-            {/* Dropdown */}
-            {open && (
-                <div
-                    style={{
-                        marginTop: 8,
-                        background: "#fff",
-                        borderRadius: 10,
-                        padding: 8,
-                        minWidth: 120,
-                        boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-                        border: "1px solid #eee",
-                        zIndex: 100,
-                    }}
-                >
-                    <button
-                        onClick={() => {
-                            localStorage.removeItem('token');
-                            localStorage.removeItem('role');
-                            window.location.reload();
-                        }}
-                        style={{
-                            width: "100%",
-                            padding: "10px 12px",
-                            border: "none",
-                            borderRadius: 8,
-                            background: "#ef4444",
-                            color: "#fff",
-                            cursor: "pointer",
-                            fontWeight: 600,
-                        }}
-                    >
-                        Logout
-                    </button>
-                </div>
-            )}
-        </div>
+                                    {/* Dropdown */}
+                                    {open && (
+                                        <div
+                                            style={{
+                                                marginTop: 8,
+                                                background: "#fff",
+                                                borderRadius: 10,
+                                                padding: 8,
+                                                minWidth: 120,
+                                                boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                                                border: "1px solid #eee",
+                                                zIndex: 100,
+                                            }}
+                                        >
+                                            <button
+                                                onClick={() => {
+                                                    localStorage.removeItem('token');
+                                                    localStorage.removeItem('role');
+                                                    window.location.reload();
+                                                }}
+                                                style={{
+                                                    width: "100%",
+                                                    padding: "10px 12px",
+                                                    border: "none",
+                                                    borderRadius: 8,
+                                                    background: "#ef4444",
+                                                    color: "#fff",
+                                                    cursor: "pointer",
+                                                    fontWeight: 600,
+                                                }}
+                                            >
+                                                Logout
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
 
                             </div>
                         </header>

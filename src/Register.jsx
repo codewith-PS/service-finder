@@ -17,7 +17,7 @@ const inputFields = [
         <circle cx="12" cy="7" r="4" />
       </svg>
     ),
-  },
+  },  
   {
     id: "email",
     label: "Email Address",
@@ -509,7 +509,7 @@ export default function Register() {
             <div style={{ display: "flex", gap: 10 }}>
               {[
                 { name: "Google", color: "#ea4335", symbol: "G" },
-                { name: "Facebook", color: "#1877f2", symbol: "f" },
+                // { name: "Facebook", color: "#1877f2", symbol: "f" },
               ].map(({ name, color, symbol }) => (
                 <button key={name} style={{
                   flex: 1, padding: "11px", border: "1.5px solid #e2e8f0", borderRadius: 10,

@@ -12,8 +12,11 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.2.4",
     "axios": "^1.15.2",
+    "firebase": "^12.13.0",
     "react": "^19.2.5",
+    "react-data-table-component": "^8.3.0",
     "react-dom": "^19.2.5",
+    "react-loader-spinner": "^8.0.2",
     "react-router-dom": "^7.14.2",
     "react-toastify": "^11.1.0"
   },

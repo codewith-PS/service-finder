@@ -13,36 +13,36 @@ import api from "./api/axios";
 
 
 
-const PROVIDERS = {
-    1: [
-        { id: 101, name: "Sunita Devi", avatar: "SD", rating: 4.8, jobs: 312, price: "₹299/hr", badge: "Top Rated", exp: "5 yrs", area: "Noida, Delhi" },
-        { id: 102, name: "CleanPro Services", avatar: "CP", rating: 4.6, jobs: 189, price: "₹349/hr", badge: "Verified", exp: "3 yrs", area: "Gurgaon" },
-        { id: 103, name: "Ramesh Kumar", avatar: "RK", rating: 4.5, jobs: 98, price: "₹249/hr", badge: null, exp: "2 yrs", area: "Faridabad" },
-    ],
-    2: [
-        { id: 201, name: "PipeFix Co.", avatar: "PF", rating: 4.9, jobs: 431, price: "₹399/hr", badge: "Top Rated", exp: "7 yrs", area: "Delhi NCR" },
-        { id: 202, name: "Suresh Plumber", avatar: "SP", rating: 4.7, jobs: 207, price: "₹349/hr", badge: "Verified", exp: "4 yrs", area: "Noida" },
-        { id: 203, name: "QuickFlow Services", avatar: "QF", rating: 4.4, jobs: 155, price: "₹299/hr", badge: null, exp: "2 yrs", area: "Ghaziabad" },
-    ],
-    3: [
-        { id: 301, name: "Bright Sparks", avatar: "BS", rating: 4.9, jobs: 520, price: "₹449/hr", badge: "Top Rated", exp: "8 yrs", area: "Pan Delhi" },
-        { id: 302, name: "Vikram Electricals", avatar: "VE", rating: 4.6, jobs: 340, price: "₹379/hr", badge: "Verified", exp: "5 yrs", area: "Noida" },
-        { id: 303, name: "PowerOn Services", avatar: "PS", rating: 4.3, jobs: 110, price: "₹329/hr", badge: null, exp: "2 yrs", area: "Greater Noida" },
-    ],
-    4: [
-        { id: 401, name: "ColorCraft Studio", avatar: "CC", rating: 4.8, jobs: 278, price: "₹499/hr", badge: "Top Rated", exp: "6 yrs", area: "South Delhi" },
-        { id: 402, name: "Mohan Painter", avatar: "MP", rating: 4.5, jobs: 194, price: "₹399/hr", badge: "Verified", exp: "4 yrs", area: "West Delhi" },
-    ],
-    5: [
-        { id: 501, name: "WoodWorks", avatar: "WW", rating: 4.7, jobs: 162, price: "₹549/hr", badge: "Top Rated", exp: "9 yrs", area: "Delhi NCR" },
-        { id: 502, name: "Ajay Carpenter", avatar: "AC", rating: 4.5, jobs: 89, price: "₹449/hr", badge: null, exp: "3 yrs", area: "Gurgaon" },
-    ],
-    6: [
-        { id: 601, name: "CoolAir Experts", avatar: "CE", rating: 4.9, jobs: 612, price: "₹599/hr", badge: "Top Rated", exp: "10 yrs", area: "Pan NCR" },
-        { id: 602, name: "FreezeFix", avatar: "FF", rating: 4.6, jobs: 321, price: "₹499/hr", badge: "Verified", exp: "5 yrs", area: "Noida" },
-        { id: 603, name: "Ravi AC Repair", avatar: "RA", rating: 4.4, jobs: 143, price: "₹449/hr", badge: null, exp: "3 yrs", area: "Ghaziabad" },
-    ],
-};
+// const PROVIDERS = {
+//     1: [
+//         { id: 101, name: "Sunita Devi", avatar: "SD", rating: 4.8, jobs: 312, price: "₹299/hr", badge: "Top Rated", exp: "5 yrs", area: "Noida, Delhi" },
+//         { id: 102, name: "CleanPro Services", avatar: "CP", rating: 4.6, jobs: 189, price: "₹349/hr", badge: "Verified", exp: "3 yrs", area: "Gurgaon" },
+//         { id: 103, name: "Ramesh Kumar", avatar: "RK", rating: 4.5, jobs: 98, price: "₹249/hr", badge: null, exp: "2 yrs", area: "Faridabad" },
+//     ],
+//     2: [
+//         { id: 201, name: "PipeFix Co.", avatar: "PF", rating: 4.9, jobs: 431, price: "₹399/hr", badge: "Top Rated", exp: "7 yrs", area: "Delhi NCR" },
+//         { id: 202, name: "Suresh Plumber", avatar: "SP", rating: 4.7, jobs: 207, price: "₹349/hr", badge: "Verified", exp: "4 yrs", area: "Noida" },
+//         { id: 203, name: "QuickFlow Services", avatar: "QF", rating: 4.4, jobs: 155, price: "₹299/hr", badge: null, exp: "2 yrs", area: "Ghaziabad" },
+//     ],
+//     3: [
+//         { id: 301, name: "Bright Sparks", avatar: "BS", rating: 4.9, jobs: 520, price: "₹449/hr", badge: "Top Rated", exp: "8 yrs", area: "Pan Delhi" },
+//         { id: 302, name: "Vikram Electricals", avatar: "VE", rating: 4.6, jobs: 340, price: "₹379/hr", badge: "Verified", exp: "5 yrs", area: "Noida" },
+//         { id: 303, name: "PowerOn Services", avatar: "PS", rating: 4.3, jobs: 110, price: "₹329/hr", badge: null, exp: "2 yrs", area: "Greater Noida" },
+//     ],
+//     4: [
+//         { id: 401, name: "ColorCraft Studio", avatar: "CC", rating: 4.8, jobs: 278, price: "₹499/hr", badge: "Top Rated", exp: "6 yrs", area: "South Delhi" },
+//         { id: 402, name: "Mohan Painter", avatar: "MP", rating: 4.5, jobs: 194, price: "₹399/hr", badge: "Verified", exp: "4 yrs", area: "West Delhi" },
+//     ],
+//     5: [
+//         { id: 501, name: "WoodWorks", avatar: "WW", rating: 4.7, jobs: 162, price: "₹549/hr", badge: "Top Rated", exp: "9 yrs", area: "Delhi NCR" },
+//         { id: 502, name: "Ajay Carpenter", avatar: "AC", rating: 4.5, jobs: 89, price: "₹449/hr", badge: null, exp: "3 yrs", area: "Gurgaon" },
+//     ],
+//     6: [
+//         { id: 601, name: "CoolAir Experts", avatar: "CE", rating: 4.9, jobs: 612, price: "₹599/hr", badge: "Top Rated", exp: "10 yrs", area: "Pan NCR" },
+//         { id: 602, name: "FreezeFix", avatar: "FF", rating: 4.6, jobs: 321, price: "₹499/hr", badge: "Verified", exp: "5 yrs", area: "Noida" },
+//         { id: 603, name: "Ravi AC Repair", avatar: "RA", rating: 4.4, jobs: 143, price: "₹449/hr", badge: null, exp: "3 yrs", area: "Ghaziabad" },
+//     ],
+// };
 
 const NAV = [
     //   { id: "dashboard", icon: "⊞",  label: "Dashboard" },
@@ -62,9 +62,9 @@ function Stars({ r }) {
     return <span style={{ color: "#F59E0B", fontSize: 12, letterSpacing: 1 }}>{"★".repeat(Math.floor(r))}{"☆".repeat(5 - Math.floor(r))}</span>;
 }
 
-function ProviderModal({ service, onClose }) {
+function ProviderModal({ service, onClose, providers, handleBooking }) {
     const [booked, setBooked] = useState({});
-    const providers = PROVIDERS[service.id] || [];
+    // const providers = PROVIDERS[service.id] || [];
     return (
         <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.5)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999, padding: 20 }}>
             <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: 24, width: "100%", maxWidth: 560, boxShadow: "0 24px 60px rgba(0,0,0,0.18)", overflow: "hidden", animation: "fadeUp 0.28s ease both", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
@@ -80,28 +80,79 @@ function ProviderModal({ service, onClose }) {
                     <button onClick={onClose} style={{ background: "#F1F5F9", border: "none", borderRadius: 10, width: 34, height: 34, cursor: "pointer", fontSize: 14, color: "#64748B", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
                 </div>
                 {/* List */}
+
                 <div style={{ padding: "18px 22px", display: "flex", flexDirection: "column", gap: 12, maxHeight: 430, overflowY: "auto" }}>
                     {providers.map((p, i) => (
-                        <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 14, background: "#F8FAFC", borderRadius: 14, padding: "14px 16px", border: "1px solid #F1F5F9", animation: `fadeUp 0.35s ease ${i * 0.07}s both` }}>
-                            <div style={{ width: 46, height: 46, borderRadius: "50%", background: service.color + "35", border: `2px solid ${service.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, color: "#0F172A", flexShrink: 0 }}>{p.avatar}</div>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                                    <span style={{ fontWeight: 700, fontSize: 14, color: "#0F172A" }}>{p.name}</span>
-                                    {p.badge && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: service.color + "20", color: "#374151", border: `1px solid ${service.color}45` }}>{p.badge}</span>}
+                        <div key={p.id} style={{
+                            display: "flex", alignItems: "center", gap: 14,
+                            background: "#F8FAFC", borderRadius: 14,
+                            padding: "14px 16px", border: "1px solid #F1F5F9",
+                            animation: `fadeUp 0.35s ease ${i * 0.07}s both`
+                        }}>
+                            {/* Avatar */}
+                            <div style={{
+                                width: 44, height: 44, borderRadius: "50%",
+                                background: service.color + "35",
+                                border: `2px solid ${service.color}`,
+                                display: "flex", alignItems: "center",
+                                justifyContent: "center", fontWeight: 800,
+                                fontSize: 14, color: "#0F172A", flexShrink: 0
+                            }}>
+                                {p.user.name.charAt(0).toUpperCase()}
+                            </div>
+
+                            {/* Info */}
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
+                                    <span style={{ fontWeight: 700, fontSize: 14, color: "#0F172A" }}>
+                                        {p.user.name}
+                                    </span>
+                                    <span style={{
+                                        fontSize: 11, fontWeight: 700,
+                                        padding: "2px 8px", borderRadius: 20,
+                                        background: service.color + "20", color: "#374151",
+                                        border: `1px solid ${service.color}45`
+                                    }}>
+                                        {p.experience}
+                                    </span>
                                 </div>
-                                <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-                                    <Stars r={p.rating} />
-                                    <span style={{ fontSize: 12, color: "#94A3B8" }}>{p.rating} · {p.jobs} jobs</span>
-                                </div>
-                                <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
-                                    <span style={{ fontSize: 11, color: "#94A3B8" }}>📍 {p.area}</span>
-                                    <span style={{ fontSize: 11, color: "#94A3B8" }}>🕒 {p.exp}</span>
-                                    <span style={{ fontSize: 13, fontWeight: 700, color: service.color }}>{p.price}</span>
+
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 5 }}>
+                                    <span style={{ fontSize: 12, color: "#94A3B8" }}>📍 {p.location}</span>
+                                    <span style={{ fontSize: 12, color: "#94A3B8" }}>📞 {p.user.contactno}</span>
+                                    <span style={{ fontSize: 12, color: "#94A3B8" }}>✉️ {p.user.email}</span>
+                                    <span style={{ fontSize: 12, color: service.color, fontWeight: 700 }}>🔧 {p.service.svcname}</span>
                                 </div>
                             </div>
-                            <button onClick={() => setBooked(b => ({ ...b, [p.id]: !b[p.id] }))} style={{ background: booked[p.id] ? "#D1FAE5" : service.color, color: booked[p.id] ? "#065F46" : "#fff", border: "none", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: 13, cursor: "pointer", flexShrink: 0, transition: "all 0.2s", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
-                                {booked[p.id] ? "✓ Booked" : "Book"}
-                            </button>
+
+                            {/* Buttons */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+                                <button
+                                    onClick={() => handleBooking(p.id)}
+                                    disabled={booked}
+                                    style={{
+                                        background: booked[p.id] ? "#D1FAE5" : "#475569",
+                                        color: booked[p.id] ? "#065F46" : "#fff",
+                                        border: "1px solid #E2E8F0", borderRadius: 10,
+                                        padding: "8px 14px", fontWeight: 700,
+                                        fontSize: 12, cursor: "pointer",
+                                        whiteSpace: "nowrap", transition: "all 0.2s"
+                                    }}
+                                >
+                                    {booked[p.id] ? "✓ Booked" : "Book Now"}
+                                </button>
+                                {/* <button
+                                    onClick={() => window.open(`tel:${p.user.contactno}`)}
+                                    style={{
+                                        background: "#F1F5F9", color: "#475569",
+                                        border: "1px solid #E2E8F0", borderRadius: 10,
+                                        padding: "8px 14px", fontSize: 12,
+                                        cursor: "pointer", whiteSpace: "nowrap"
+                                    }}
+                                >
+                                    📞 Contact
+                                </button> */}
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -116,10 +167,43 @@ export default function Dashboard() {
     const [collapsed, setCollapsed] = useState(false);
     const [loggedOut, setLoggedOut] = useState(false);
     const [service, setServices] = useState([]);
+    const [providers, setProviders] = useState([]);
+    const [booked, setBooked] = useState(false);
+    const [providerLoading, setProviderLoading] = useState(false);
 
+
+    const handleBooking = async (providerId) => {
+
+        const user_id = localStorage.getItem('id');
+
+        const bookingData = {
+            user_id: user_id,
+            provider_id: providerId,
+            service_id: selectedService.id,
+            date: new Date().toISOString().split('T')[0],
+            status: 'pending'
+        };
+
+        // console.log(bookingData);
+
+        try {
+
+            const res = await api.post('/booking', bookingData);
+
+            console.log(res.data);
+            if (res.status === 201) {
+                setBooked(true);
+            }
+
+            // alert("Booking Request Sent");
+        } catch (err) {
+
+            console.log(err.response?.data || err);
+        }
+    };
     useEffect(() => {
         // console.log(localStorage.getItem('token'));
-        api.get('http://127.0.0.1:8000/api/services')
+        api.get('/services')
             .then((res) => {
                 setServices(res.data.service);
                 // console.log(res.data.service);
@@ -128,6 +212,19 @@ export default function Dashboard() {
                 console.log(err.response?.data || "Error");
             })
     }, []);
+
+    const getProviders = (id) => {
+        setProviderLoading(true);
+        setProviders([]);
+        api.get(`/getprovideruser/${id}`)
+            .then((res) => {
+                console.log(res.data.providers);
+                setProviders(res.data.providers);
+            })
+            .catch((err) => {
+                console.log(err.response?.data || "Error");
+            });
+    };
 
     if (loggedOut) return (
         <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#F1F5F9", fontFamily: "'Plus Jakarta Sans',sans-serif" }}>
@@ -308,7 +405,10 @@ export default function Dashboard() {
                             {service.map((svc, i) => (
                                 <div
                                     key={svc.id}
-                                    onClick={() => setSelectedService(svc)}
+                                    onClick={() => {
+                                        setSelectedService(svc);
+                                        getProviders(svc.id);
+                                    }}
                                     style={{
                                         position: "relative",
                                         background: "#fff",
@@ -508,10 +608,10 @@ export default function Dashboard() {
                     )}
 
                 </main>
-            </div>
+            </div >
 
             {/* Modal */}
-            {selectedService && <ProviderModal service={selectedService} onClose={() => setSelectedService(null)} />}
-        </div>
+            {selectedService && <ProviderModal service={selectedService} onClose={() => setSelectedService(null)} providers={providers} handleBooking={handleBooking} />}
+        </div >
     );
 }
